@@ -3,9 +3,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -17,7 +19,7 @@ namespace EveCentralProvider
 	public sealed class Services : IServices
 	{
 		private readonly string ApiFormat = "http://api.eve-central.com/api/{0}?{1}";
-		private readonly string UserAgent = ".NET Eve Central Provider v0.1-alpha";
+		private readonly string UserAgent = String.Format(".NET Eve Central Provider v{0}", FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
 
 		private static readonly Services _instance = new Services();
 		public static Services Instance { get { return _instance; } }
