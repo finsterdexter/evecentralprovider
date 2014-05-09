@@ -68,7 +68,7 @@ namespace EveCentralProvider.Tests
 			Services target = Services.Instance;
 			EveMonResult output = target.EveMon();
 
-			Assert.IsTrue(output.Minerals.First().name == "Tritanium");
+			Assert.IsTrue(output.Minerals.All(mineral => mineral.name != null && mineral.name != "" && mineral.price != 0));
 		}
 
 		[TestMethod]
@@ -77,7 +77,10 @@ namespace EveCentralProvider.Tests
 			Services target = Services.Instance;
 			List<RouteJump> output = target.Route("Jita", "HED-GP");
 
-			
+			Assert.AreEqual("Jita", output[0].From.Name);
+			Assert.AreEqual("Perimeter", output[0].To.Name);
+
+			Assert.AreEqual("Perimeter", output[1].From.Name);
 		}
 	}
 }
