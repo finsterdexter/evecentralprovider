@@ -32,7 +32,6 @@ namespace EveCentralProvider.Types
 		public List<string> Regions { get; set; }
 	}
 
-	// TODO: make this not public
 	[XmlRoot("evec_api")]
 	public class EveCentralApiQuickLookResult
 	{

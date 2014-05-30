@@ -19,6 +19,7 @@ namespace EveCentralProvider
 		/// <param name="hours">Statistics from the last X specified hours. Defaults to 24.</param>
 		/// <returns></returns>
 		List<TypeMarketStats> MarketStat(List<int> typeid, List<int> regionlimit, int minQ = 10001, int usesystem = 0, int hours = 24);
+		Task<List<TypeMarketStats>> MarketStatAsync(List<int> typeid, List<int> regionlimit, int minQ = 10001, int usesystem = 0, int hours = 24);
 
 		/// <summary>
 		/// Retrieve all of the available market orders, including prices, stations, order IDs, volumes, etc.
@@ -30,6 +31,7 @@ namespace EveCentralProvider
 		/// <param name="sethours">Get orders which have been posted within the last X hours. Defaults to 360</param>
 		/// <returns></returns>
 		QuickLookResult QuickLook(int typeid, List<int> regionlimit, int setminQ = 10001, int usesystem = 0, int sethours = 360);
+		Task<QuickLookResult> QuickLookAsync(int typeid, List<int> regionlimit, int setminQ = 10001, int usesystem = 0, int sethours = 360);
 
 		/// <summary>
 		/// Retrieve all of the available market orders, including prices, stations, order IDs, volumes, etc., on a given jump path.
@@ -41,6 +43,7 @@ namespace EveCentralProvider
 		/// <param name="sethours">Get orders which have been posted within the last X hours. Defaults to 360</param>
 		/// <returns></returns>
 		QuickLookPathResult QuickLookPath(string start, string end, int type, int setminQ, int sethours = 360);
+		Task<QuickLookPathResult> QuickLookPathAsync(string start, string end, int type, int setminQ, int sethours = 360);
 
 		/// <summary>
 		/// You can get a snapshot of EVE-Central statistics (not game statistics) over time.
@@ -51,12 +54,14 @@ namespace EveCentralProvider
 		/// <param name="idOrName">If you specified “system” or “region”, the text or numerical ID of the system or region.</param>
 		/// <returns></returns>
 		List<TypeHistory> History(int type, LocaleType locale, string idOrName, OrderType bid);
+		Task<List<TypeHistory>> HistoryAsync(int type, LocaleType locale, string idOrName, OrderType bid);
 
 		/// <summary>
 		/// Retrieve the median mineral prices in the empire regions in a format digestible by EVEmon.
 		/// </summary>
 		/// <returns></returns>
 		EveMonResult EveMon();
+		Task<EveMonResult> EveMonAsync();
 
 		/// <summary>
 		/// Retrieve a shortest-path route between two places
@@ -65,5 +70,6 @@ namespace EveCentralProvider
 		/// <param name="end">The name or solarsystem ID where to end the path</param>
 		/// <returns></returns>
 		List<RouteJump> Route(string start, string end);
+		Task<List<RouteJump>> RouteAsync(string start, string end);
 	}
 }
