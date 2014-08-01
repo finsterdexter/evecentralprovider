@@ -345,9 +345,9 @@ namespace EveCentralProvider
 		/// <returns>The response stream.</returns>
 		private Stream Post(Uri apiUrl)
 		{
-			var data = Encoding.UTF8.GetBytes(apiUrl.Query);
+			var data = Encoding.UTF8.GetBytes(apiUrl.Query.TrimStart('?'));
 
-			Uri requestUri = new Uri(apiUrl.AbsolutePath);
+			Uri requestUri = new Uri(apiUrl.GetLeftPart(UriPartial.Path));
 
 			HttpWebRequest req = WebRequest.CreateHttp(requestUri);
 			req.UserAgent = UserAgent;
@@ -369,9 +369,9 @@ namespace EveCentralProvider
 		}
 		private async Task<Stream> PostAsync(Uri apiUrl)
 		{
-			var data = Encoding.UTF8.GetBytes(apiUrl.Query);
+			var data = Encoding.UTF8.GetBytes(apiUrl.Query.TrimStart('?'));
 
-			Uri requestUri = new Uri(apiUrl.AbsolutePath);
+			Uri requestUri = new Uri(apiUrl.GetLeftPart(UriPartial.Path));
 
 			HttpWebRequest req = WebRequest.CreateHttp(requestUri);
 			req.UserAgent = UserAgent;
