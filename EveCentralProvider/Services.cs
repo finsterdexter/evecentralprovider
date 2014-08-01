@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,17 +34,19 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildMarketStatUrl(typeid, regionlimit, minQ, usesystem, hours);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = req.GetResponse())
+			Stream stream;
+			if (apiUrl.ToString().Length > 2000)
 			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiMarketStatResult));
-				var stream = response.GetResponseStream();
-				var results = (EveCentralApiMarketStatResult)xml.Deserialize(stream);
-				return results.marketstat.type;
+				stream = Post(apiUrl);
 			}
+			else
+			{
+				stream = Get(apiUrl);
+			}
+
+			XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiMarketStatResult));
+			var results = (EveCentralApiMarketStatResult)xml.Deserialize(stream);
+			return results.marketstat.type;
 		}
 
 		private Uri BuildMarketStatUrl(List<int> typeid, List<int> regionlimit, int minQ, int usesystem, int hours)
@@ -76,35 +79,38 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildMarketStatUrl(typeid, regionlimit, minQ, usesystem, hours);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = await req.GetResponseAsync())
+			Stream stream;
+			if (apiUrl.ToString().Length > 2000)
 			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiMarketStatResult));
-				var stream = response.GetResponseStream();
-				var results = (EveCentralApiMarketStatResult)xml.Deserialize(stream);
-				return results.marketstat.type;
+				stream = await PostAsync(apiUrl);
+			}
+			else
+			{
+				stream = await GetAsync(apiUrl);
 			}
 
+			XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiMarketStatResult));
+			var results = (EveCentralApiMarketStatResult)xml.Deserialize(stream);
+			return results.marketstat.type;
 		}
 
 		public QuickLookResult QuickLook(int typeid, List<int> regionlimit, int setminQ = 10001, int usesystem = 0, int sethours = 360)
 		{
 			Uri apiUrl = BuildQuickLookUrl(typeid, regionlimit, setminQ, usesystem, sethours);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = req.GetResponse())
+			Stream stream;
+			if (apiUrl.ToString().Length > 2000)
 			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookResult));
-				var stream = response.GetResponseStream();
-				var results = (EveCentralApiQuickLookResult)xml.Deserialize(stream);
-				return results.quicklook;
+				stream = Post(apiUrl);
 			}
+			else
+			{
+				stream = Get(apiUrl);
+			}
+
+			XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookResult));
+			var results = (EveCentralApiQuickLookResult)xml.Deserialize(stream);
+			return results.quicklook;
 		}
 
 		private Uri BuildQuickLookUrl(int typeid, List<int> regionlimit, int setminQ, int usesystem, int sethours)
@@ -134,17 +140,19 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildQuickLookUrl(typeid, regionlimit, setminQ, usesystem, sethours);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = await req.GetResponseAsync())
+			Stream stream;
+			if (apiUrl.ToString().Length > 2000)
 			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookResult));
-				var stream = response.GetResponseStream();
-				var results = (EveCentralApiQuickLookResult)xml.Deserialize(stream);
-				return results.quicklook;
+				stream = await PostAsync(apiUrl);
 			}
+			else
+			{
+				stream = await GetAsync(apiUrl);
+			}
+
+			XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookResult));
+			var results = (EveCentralApiQuickLookResult)xml.Deserialize(stream);
+			return results.quicklook;
 		}
 
 
@@ -152,18 +160,10 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildQuickLookPathUrl(start, end, type, setminQ, sethours);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = req.GetResponse())
-			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookPathResult));
-				var stream = response.GetResponseStream();
-				var results = (EveCentralApiQuickLookPathResult)xml.Deserialize(stream);
-				return results.quicklook;
-			}
-			
+			var stream = Get(apiUrl);
+			XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookPathResult));
+			var results = (EveCentralApiQuickLookPathResult)xml.Deserialize(stream);
+			return results.quicklook;
 		}
 
 		private Uri BuildQuickLookPathUrl(string start, string end, int type, int setminQ, int sethours)
@@ -186,18 +186,10 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildQuickLookPathUrl(start, end, type, setminQ, sethours);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = await req.GetResponseAsync())
-			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookPathResult));
-				var stream = response.GetResponseStream();
-				var results = (EveCentralApiQuickLookPathResult)xml.Deserialize(stream);
-				return results.quicklook;
-			}
-
+			var stream = await GetAsync(apiUrl);
+			XmlSerializer xml = new XmlSerializer(typeof(EveCentralApiQuickLookPathResult));
+			var results = (EveCentralApiQuickLookPathResult)xml.Deserialize(stream);
+			return results.quicklook;
 		}
 
 
@@ -206,17 +198,10 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildHistoryUrl(type, locale, idOrName, bid);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = req.GetResponse())
-			{
-				var stream = response.GetResponseStream();
-				StreamReader reader = new StreamReader(stream);
-				string json = reader.ReadToEnd();
-				return ParseHistoryJson(json);
-			}
+			var stream = Get(apiUrl);
+			StreamReader reader = new StreamReader(stream);
+			string json = reader.ReadToEnd();
+			return ParseHistoryJson(json);
 		}
 
 		private List<TypeHistory> ParseHistoryJson(string json)
@@ -252,34 +237,20 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildHistoryUrl(type, locale, idOrName, bid);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = await req.GetResponseAsync())
-			{
-				var stream = response.GetResponseStream();
-				StreamReader reader = new StreamReader(stream);
-				string json = await reader.ReadToEndAsync();
-				return ParseHistoryJson(json);
-			}
+			var stream = await GetAsync(apiUrl);
+			StreamReader reader = new StreamReader(stream);
+			string json = await reader.ReadToEndAsync();
+			return ParseHistoryJson(json);
 		}
 
 		public EveMonResult EveMon()
 		{
 			Uri apiUrl = BuildEveMonUrl();
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = req.GetResponse())
-			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveMonResult));
-				var stream = response.GetResponseStream();
-				var results = (EveMonResult)xml.Deserialize(stream);
-				return results;
-			}
+			var stream = Get(apiUrl);
+			XmlSerializer xml = new XmlSerializer(typeof(EveMonResult));
+			var results = (EveMonResult)xml.Deserialize(stream);
+			return results;
 		}
 
 		private Uri BuildEveMonUrl()
@@ -293,33 +264,20 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildEveMonUrl();
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-
-			using (var response = await req.GetResponseAsync())
-			{
-				XmlSerializer xml = new XmlSerializer(typeof(EveMonResult));
-				var stream = response.GetResponseStream();
-				var results = (EveMonResult)xml.Deserialize(stream);
-				return results;
-			}
+			var stream = await GetAsync(apiUrl);
+			XmlSerializer xml = new XmlSerializer(typeof(EveMonResult));
+			var results = (EveMonResult)xml.Deserialize(stream);
+			return results;
 		}
 
 		public List<RouteJump> Route(string start, string end)
 		{
 			Uri apiUrl = BuildRouteUrl(start, end);
 
-			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
-			req.UserAgent = UserAgent;
-			req.Method = "GET";
-			using (var response = req.GetResponse())
-			{
-				var stream = response.GetResponseStream();
-				StreamReader reader = new StreamReader(stream);
-				string json = reader.ReadToEnd();
-				return ParseRouteJson(json);
-			}
+			var stream = Get(apiUrl);
+			StreamReader reader = new StreamReader(stream);
+			string json = reader.ReadToEnd();
+			return ParseRouteJson(json);
 		}
 
 		private List<RouteJump> ParseRouteJson(string json)
@@ -346,17 +304,110 @@ namespace EveCentralProvider
 		{
 			Uri apiUrl = BuildRouteUrl(start, end);
 
+			var stream = await GetAsync(apiUrl);
+			StreamReader reader = new StreamReader(stream);
+			string json = await reader.ReadToEndAsync();
+			return ParseRouteJson(json);
+		}
+
+		private Stream Get(Uri apiUrl)
+		{
+			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
+			req.UserAgent = UserAgent;
+			req.Method = "GET";
+
+			using (var response = req.GetResponse())
+			{
+				var stream = CopyAndClose(response.GetResponseStream());
+				return stream;
+			}
+
+		}
+
+		private async Task<Stream> GetAsync(Uri apiUrl)
+		{
 			HttpWebRequest req = WebRequest.CreateHttp(apiUrl);
 			req.UserAgent = UserAgent;
 			req.Method = "GET";
 
 			using (var response = await req.GetResponseAsync())
 			{
-				var stream = response.GetResponseStream();
-				StreamReader reader = new StreamReader(stream);
-				string json = await reader.ReadToEndAsync();
-				return ParseRouteJson(json);
+				var stream = CopyAndClose(response.GetResponseStream());
+				return stream;
 			}
+
+		}
+
+		/// <summary>
+		/// This parses the query string on the apiUrl and turns it into POST data
+		/// </summary>
+		/// <param name="apiUrl">The URL for the request, which MUST include a query string with relavant POST data</param>
+		/// <returns>The response stream.</returns>
+		private Stream Post(Uri apiUrl)
+		{
+			var data = Encoding.UTF8.GetBytes(apiUrl.Query.TrimStart('?'));
+
+			Uri requestUri = new Uri(apiUrl.GetLeftPart(UriPartial.Path));
+
+			HttpWebRequest req = WebRequest.CreateHttp(requestUri);
+			req.UserAgent = UserAgent;
+			req.Method = "POST";
+			req.ContentLength = data.Length;
+			req.ContentType = "application/x-www-form-urlencoded";
+
+			using (var reqStream = req.GetRequestStream())
+			{
+				reqStream.Write(data, 0, data.Length);
+			}
+
+			MemoryStream output = new MemoryStream();
+			using (var response = req.GetResponse())
+			{
+				var stream = CopyAndClose(response.GetResponseStream());
+				return stream;
+			}
+		}
+		private async Task<Stream> PostAsync(Uri apiUrl)
+		{
+			var data = Encoding.UTF8.GetBytes(apiUrl.Query.TrimStart('?'));
+
+			Uri requestUri = new Uri(apiUrl.GetLeftPart(UriPartial.Path));
+
+			HttpWebRequest req = WebRequest.CreateHttp(requestUri);
+			req.UserAgent = UserAgent;
+			req.Method = "POST";
+			req.ContentLength = data.Length;
+			req.ContentType = "application/x-www-form-urlencoded";
+
+			using (var reqStream = await req.GetRequestStreamAsync())
+			{
+				await reqStream.WriteAsync(data, 0, data.Length);
+			}
+
+			using (var response = await req.GetResponseAsync())
+			{
+				var stream = CopyAndClose(response.GetResponseStream());
+				return stream;
+			}
+		}
+
+		// http://stackoverflow.com/questions/147941/how-can-i-read-an-http-response-stream-twice-in-c
+		// I have to copy the HttpResponse stream. Otherwise, the stream is closed when the response is closed by the using block.
+		private static Stream CopyAndClose(Stream inputStream)
+		{
+			const int readSize = 256;
+			byte[] buffer = new byte[readSize];
+			MemoryStream ms = new MemoryStream();
+
+			int count = inputStream.Read(buffer, 0, readSize);
+			while (count > 0)
+			{
+				ms.Write(buffer, 0, count);
+				count = inputStream.Read(buffer, 0, readSize);
+			}
+			ms.Position = 0;
+			inputStream.Close();
+			return ms;
 		}
 
 	}
