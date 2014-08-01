@@ -318,7 +318,7 @@ namespace EveCentralProvider
 
 			using (var response = req.GetResponse())
 			{
-				var stream = response.GetResponseStream();
+				var stream = CopyAndClose(response.GetResponseStream());
 				return stream;
 			}
 
@@ -332,7 +332,7 @@ namespace EveCentralProvider
 
 			using (var response = await req.GetResponseAsync())
 			{
-				var stream = response.GetResponseStream();
+				var stream = CopyAndClose(response.GetResponseStream());
 				return stream;
 			}
 
@@ -360,9 +360,10 @@ namespace EveCentralProvider
 				reqStream.Write(data, 0, data.Length);
 			}
 
+			MemoryStream output = new MemoryStream();
 			using (var response = req.GetResponse())
 			{
-				var stream = response.GetResponseStream();
+				var stream = CopyAndClose(response.GetResponseStream());
 				return stream;
 			}
 		}
@@ -385,9 +386,28 @@ namespace EveCentralProvider
 
 			using (var response = await req.GetResponseAsync())
 			{
-				var stream = response.GetResponseStream();
+				var stream = CopyAndClose(response.GetResponseStream());
 				return stream;
 			}
+		}
+
+		// http://stackoverflow.com/questions/147941/how-can-i-read-an-http-response-stream-twice-in-c
+		// I have to copy the HttpResponse stream. Otherwise, the stream is closed when the response is closed by the using block.
+		private static Stream CopyAndClose(Stream inputStream)
+		{
+			const int readSize = 256;
+			byte[] buffer = new byte[readSize];
+			MemoryStream ms = new MemoryStream();
+
+			int count = inputStream.Read(buffer, 0, readSize);
+			while (count > 0)
+			{
+				ms.Write(buffer, 0, count);
+				count = inputStream.Read(buffer, 0, readSize);
+			}
+			ms.Position = 0;
+			inputStream.Close();
+			return ms;
 		}
 
 	}
